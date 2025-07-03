@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>پست‌های من</h2>
+  {% if posts %}
+    <ul>
+      {% for post in posts %}
+        <li><strong>{{ post.body }}</strong> - {{ post.created_at|date:"Y-m-d" }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>شما هیچ پستی ندارید.</p>
+  {% endif %}
+{% endblock %}
