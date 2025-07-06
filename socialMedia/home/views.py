@@ -3,8 +3,8 @@ from django.views import View
 from .models import Posts
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from.forms import PostUpdateForm
-
+from .forms import PostUpdateForm
+from django.utils.text import slugify
 
 
 class HomeView(View):
@@ -35,15 +35,25 @@ class PostDeleteView(LoginRequiredMixin, View):
 
 class PostUpdateView(LoginRequiredMixin, View):
     form_class = PostUpdateForm
+    def setup(self, request, *args, **kwargs):
+        self.post_instace = Posts.objects.get(pk=kwargs['post_id'])
+        return super().setup(request, *args, **kwargs)
     def dispatch(self, request, *args, **kwargs):
-        post = Posts.objects.get(pk=kwargs['post_id'])
+        post = self.post_instace
         if post.user.id != request.user.id:
             messages.error(request, 'you are not allowed to edit someone else posts', 'danger')
             return redirect(request, 'home:home')
         return super().dispatch(request, *args, **kwargs)
-    def get(self, request, post_id):
-        post = Posts.objects.get(pk=post_id)
+    def get(self, request, *args, **kwargs):
+        post = self.post_instace
         form = self.form_class(instance=post)
         return render(request, 'home/update.html', {'form': form})
-    def post(self, request, post_id):
-        pass
+    def post(self, request, *args, **kwargs):
+        post = self.post_instace
+        form = self.form_class(request.POST, instance=post)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.slug = slugify(form.cleaned_data['body'][:30])
+            new_post.save()
+            messages.success(request, 'your post updated successfully', 'success')
+            return redirect('home:post_detail', post.id, post.slug)
