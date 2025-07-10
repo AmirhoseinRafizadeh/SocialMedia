@@ -9,6 +9,7 @@ from home.models import Posts
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 
+from .models import Relation
 
 
 class UserRegisterView(View):
@@ -69,9 +70,13 @@ class UserLogoutView(LoginRequiredMixin, View):
 
 class UserProfileView(LoginRequiredMixin, View):
     def get(self, request, user_id):
+        is_following = False
         user = get_object_or_404(User, pk=user_id)
         posts = Posts.objects.filter(user_id=user)
-        return render(request, 'account/profile.html', {'user': user, 'posts': posts})
+        relation = Relation.objects.filter(from_user=request.user, to_user=user)
+        if relation.exists():
+            is_following = True
+        return render(request, 'account/profile.html', {'user': user, 'posts': posts, 'is_following': is_following})
 
 
 
@@ -91,3 +96,30 @@ class UserPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
 
 class UserPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = 'account/password_reset_complete.html'
+
+
+
+
+class UserFollowView(LoginRequiredMixin, View):
+    def get(self, request, user_id):
+        user = User.objects.get(pk=user_id)
+        relation = Relation.objects.filter(from_user=request.user, to_user=user)
+        if relation.exists():
+            messages.error(request, 'You are already following', 'danger')
+        else:
+            relation = Relation(from_user=request.user, to_user=user)
+            relation.save()
+            messages.success(request, 'You are now following', 'success')
+            return redirect('account:user_profile', user_id)
+
+
+class UserUnfollowView(LoginRequiredMixin, View):
+    def get(self, request, user_id):
+        user = User.objects.get(pk=user_id)
+        relation = Relation.objects.filter(from_user=request.user, to_user=user)
+        if relation.exists():
+            relation.delete()
+            messages.success(request, 'You are now unfollowing', 'success')
+        else:
+            messages.error(request, 'You are not following', 'danger')
+        return redirect('account:user_profile', user.id)
