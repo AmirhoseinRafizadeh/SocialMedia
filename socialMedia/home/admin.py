@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Posts
+from .models import Posts, comments
 
 
 
@@ -11,3 +11,8 @@ class PostAdmin(admin.ModelAdmin):
     raw_id_fields = ['user']
 
 admin.site.register(Posts, PostAdmin)
+
+class commentsAdmin(admin.ModelAdmin):
+    list_display = ['user', 'post', 'body', 'created']
+    raw_id_fields = ['user', 'post', 'reply']
+admin.site.register(comments, commentsAdmin)
