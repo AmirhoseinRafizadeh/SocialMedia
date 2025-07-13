@@ -25,7 +25,7 @@ class PostDetailView(View):
 
         return super().setup(request, *args, **kwargs)
     def get(self, request, *args, **kwargs):
-        comments = self.post_instance.post_comments.filter(is_reply=True)
+        comments = self.post_instance.post_comments.filter(is_reply=False)
         return render(request, 'home/detail.html', {'post': self.post_instance, 'comments': comments, 'form':self.form_class})
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs ):
@@ -34,7 +34,6 @@ class PostDetailView(View):
             new_comment = form.save(commit=False)
             new_comment.user = request.user
             new_comment.post = self.post_instance
-            new_comment.is_reply = True
             new_comment.save()
             messages.success(request, 'Your comment has been posted', 'success')
             return redirect('home:post_detail', self.post_instance.id, self.post_instance.slug)
