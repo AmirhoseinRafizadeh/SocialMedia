@@ -3,16 +3,19 @@ from django.views import View
 from .models import Posts, comments, Vote
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from .forms import PostCreateUpdateForm, CommentCreateForm, CommentReplyForm
+from .forms import PostCreateUpdateForm, CommentCreateForm, CommentReplyForm, PostSearchForm
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 
 class HomeView(View):
+    form_class = PostSearchForm
     def get(self, request):
         posts = Posts.objects.all()
-        return render(request, 'home/index.html', {'posts': posts})
+        if request.GET.get('search'):
+            posts = posts.filter(body__contains=request.GET['search'])
+        return render(request, 'home/index.html', {'posts': posts, 'form': self.form_class})
     def post(self, request):
         posts = Posts.objects.all()
         return render(request, 'home/index.html', {'posts': posts})
