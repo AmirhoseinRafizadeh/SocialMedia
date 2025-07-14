@@ -5,6 +5,7 @@ class Posts(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     body = models.TextField()
     slug = models.SlugField()
+    title = models.CharField(max_length=20, default='empty')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     class Meta:
