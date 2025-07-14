@@ -13,6 +13,8 @@ class Posts(models.Model):
         return f'{self.slug} - {self.created}'
     def get_absolute_url(self):
         return reverse('home:post_detail', args=(self.id, self.slug))
+    def like_count(self):
+        self.post_votes.count()
 
 
 
@@ -26,3 +28,11 @@ class comments(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.body[:20]}'
+
+
+class Vote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_votes')
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE, related_name='post_votes')
+    def __str__(self):
+        return f'{self.user} liked {self.post}'
+

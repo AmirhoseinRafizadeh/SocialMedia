@@ -7,13 +7,14 @@
 <p><a href="{% url 'account:user_profile' post.user.id %}">{{ post.user.username }}</a> - {{ post.updated|date:"M-d" }}</p>
 <p>{{ post.body }}</p><hr>
 {% if request.user.is_authenticated %}
+<a href="{% url 'home:post_like' post.id %}" class="btn btn-primary">Like</a>
 <form action="" method="post">
     {% csrf_token %}
     {{form.as_p}}
     <input type="submit" value="SEND">
 </form><br>
 {% else %}
-<h3 class="alert alert-danger">only logged user can comment on this post</h3>
+    <h3 class="alert alert-danger">only logged user can comment on this post</h3>
 {% endif %}
 
 {% for comment in comments %}
