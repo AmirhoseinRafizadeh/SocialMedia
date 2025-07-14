@@ -17,3 +17,12 @@ class CommentCreateForm(forms.ModelForm):
         widgets = {
             'body': forms.Textarea(attrs={'class': 'form-control'}),
         }
+
+
+class CommentReplyForm(forms.ModelForm):
+    class Meta:
+        model = comments
+        fields = ['body']
+        widgets = {
+            'body': forms.Textarea(attrs={'class': 'form-control'}),
+        }
