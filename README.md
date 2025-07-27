@@ -1,4 +1,4 @@
-# 📸 SocialMedia – Instagram-like Social Media Platform
+# 📸 Socialgram – Instagram-like Social Media Platform
 
 **Socialgram** is a simple yet powerful social media platform inspired by Instagram. It allows users to sign up, log in, create posts, follow other users, comment on posts, and interact with the community.
 
